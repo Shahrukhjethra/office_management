@@ -7,7 +7,8 @@ const {
   forgotPassword,
   resetPassword,
   updateDetails,
-  updatePassword
+  updatePassword,
+  userPhotoUpload
 } = require('../controllers/auth');
 
 const router = express.Router();
@@ -22,5 +23,9 @@ router.put('/updatedetails', protect, updateDetails);
 router.put('/updatepassword', protect, updatePassword);
 router.post('/forgotpassword', forgotPassword);
 router.put('/resetpassword/:resettoken', resetPassword);
+router
+  .route('/photoUpload')
+  .put(protect, userPhotoUpload);
+
 
 module.exports = router;

@@ -30,6 +30,10 @@ const UserSchema = new mongoose.Schema({
       'Please add a valid email'
     ]
   },
+  photo: {
+    type: String,
+    default: 'no-photo.jpg'
+  },
   role: {
     type: String,
     enum: ['user'],

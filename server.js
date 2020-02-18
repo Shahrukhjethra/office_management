@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // File uploading
-app.use (fileupload ());
+ app.use (fileupload ());
 
 // Sanitize data
 app.use (mongoSanitize ());
