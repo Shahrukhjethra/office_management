@@ -13,7 +13,8 @@ const hpp = require ('hpp');
 const cors = require ('cors');
 const errorHandler = require ('./middleware/error');
 const connectDB = require ('./config/db');
-
+const routePath = path.dirname(process.mainModule.filename)
+const bodyParser = require('body-parser');
 // Load env vars
 dotenv.config ({path: './config/config.env'});
 
@@ -22,15 +23,22 @@ connectDB ();
 
 // Route files
 const auth = require('./routes/auth');
+const location = require('./routes/locations');
 
 const app = express ();
 
 // Body parser
+
+app.use(bodyParser.urlencoded({ extended: false }))
+
 app.use (express.json ());
 
 // Cookie parser
 app.use (cookieParser ());
 
+
+
+//app.use(express.urlencoded({ extended: true }));
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') {
   app.use (morgan ('dev'));
@@ -64,17 +72,21 @@ app.use (cors ());
 // Set static folder
 app.use (express.static (path.join (__dirname, 'public')));
 
+// set view path 
+app.set('views', path.join(routePath, '/views'));  
+
 // Mount routers
 //app.use ('/api/v1/users', users);
 
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/location', location);
 
 app.use (errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen (
-  PORT,
+  PORT,'0.0.0.0',
   console.log (
     `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold
   )

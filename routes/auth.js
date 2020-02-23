@@ -8,7 +8,8 @@ const {
   resetPassword,
   updateDetails,
   updatePassword,
-  userPhotoUpload
+  userPhotoUpload,
+  viewTest
 } = require('../controllers/auth');
 
 const router = express.Router();
@@ -22,7 +23,8 @@ router.get('/me', protect, getMe);
 router.put('/updatedetails', protect, updateDetails);
 router.put('/updatepassword', protect, updatePassword);
 router.post('/forgotpassword', forgotPassword);
-router.put('/resetpassword/:resettoken', resetPassword);
+router.post('/resetpassword/:resettoken', resetPassword);
+router.get('/resetpassword/:resettoken', viewTest);
 router
   .route('/photoUpload')
   .put(protect, userPhotoUpload);

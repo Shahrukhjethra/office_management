@@ -3,7 +3,7 @@ const ErrorResponse = require ('../utils/errorResponse');
 const asyncHandler = require ('../middleware/async');
 const sendEmail = require ('../utils/sendEmail');
 const User = require ('../models/User');
-const path = require('path');
+const path = require ('path');
 // @desc      Register user
 // @route     POST /api/v1/auth/register
 // @access    Public
@@ -163,28 +163,47 @@ exports.forgotPassword = asyncHandler (async (req, res, next) => {
 // @route     PUT /api/v1/auth/resetpassword/:resettoken
 // @access    Public
 exports.resetPassword = asyncHandler (async (req, res, next) => {
-  // Get hashed token
-  const resetPasswordToken = crypto
-    .createHash ('sha256')
-    .update (req.params.resettoken)
-    .digest ('hex');
+  //console.log("resetPassword_post", JSON.parse(JSON.stringify(req.body))  );
+  console.log ('resetPassword_post', req.body);
 
-  const user = await User.findOne ({
-    resetPasswordToken,
-    resetPasswordExpire: {$gt: Date.now ()},
-  });
+  if (req.body.password == req.body.confirm) {
+    // Get hashed token
+    const resetPasswordToken = crypto
+      .createHash ('sha256')
+      .update (req.params.resettoken)
+      .digest ('hex');
 
-  if (!user) {
-    return next (new ErrorResponse ('Invalid token', 400));
+    const user = await User.findOne ({
+      resetPasswordToken,
+      resetPasswordExpire: {$gt: Date.now ()},
+    });
+
+    if (!user) {
+      return next (new ErrorResponse ('Invalid token', 400));
+    }
+
+    // Set new password
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save ();
+    req.flash ('success', 'Success! Your password has been changed.');
+  } else {
+    return next (new ErrorResponse ('you password done not match with confirm password.', 400));
   }
 
-  // Set new password
-  user.password = req.body.password;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpire = undefined;
-  await user.save ();
+  //sendTokenResponse (user, 200, res);
+});
 
-  sendTokenResponse (user, 200, res);
+// @desc      Reset password
+// @route     PUT /api/v1/auth/resetpassword/:resettoken
+// @access    Public
+exports.viewTest = asyncHandler (async (req, res, next) => {
+  console.log ('token', req.params.resettoken);
+
+  res.render ('login.ejs', {
+    token: req.params.resettoken,
+  });
 });
 
 // Get token from model, create cookie and send response
