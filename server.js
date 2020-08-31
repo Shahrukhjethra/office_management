@@ -3,8 +3,7 @@ const express = require ('express');
 const dotenv = require ('dotenv');
 const morgan = require ('morgan');
 const colors = require ('colors');
-const fileupload = require ('express-fileupload');
-const cookieParser = require ('cookie-parser');
+
 const mongoSanitize = require ('express-mongo-sanitize');
 const helmet = require ('helmet');
 const xss = require ('xss-clean');
@@ -22,8 +21,8 @@ dotenv.config ({path: './config/config.env'});
 connectDB ();
 
 // Route files
-const auth = require('./routes/auth');
-const location = require('./routes/locations');
+const company = require('./routes/company');
+const employee = require('./routes/employee');
 
 const app = express ();
 
@@ -33,8 +32,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use (express.json ());
 
-// Cookie parser
-app.use (cookieParser ());
+
 
 
 
@@ -44,8 +42,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use (morgan ('dev'));
 }
 
-// File uploading
- app.use (fileupload ());
+
 
 // Sanitize data
 app.use (mongoSanitize ());
@@ -78,15 +75,15 @@ app.set('views', path.join(routePath, '/views'));
 // Mount routers
 //app.use ('/api/v1/users', users);
 
-app.use('/api/v1/auth', auth);
-app.use('/api/v1/location', location);
+app.use('/company', company);
+app.use('/employee', employee);
 
 app.use (errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen (
-  PORT,'0.0.0.0',
+  PORT,
   console.log (
     `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold
   )
